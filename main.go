@@ -39,13 +39,19 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
+	// Get port from environment variable or default to 8080
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
 	// Start server in a goroutine
 	go func() {
-		fmt.Println("Starting MCP HTTP streaming server on port 8081...")
-		fmt.Println("The server endpoint is available at: http://localhost:8081/mcp")
+		fmt.Printf("Starting MCP HTTP streaming server on port %s...\n", port)
+		fmt.Printf("The server endpoint is available at: http://localhost:%s/mcp\n", port)
 		fmt.Println("Press Ctrl+C to gracefully shutdown")
 
-		if err := streamableServer.Start(":8081"); err != nil {
+		if err := streamableServer.Start(":" + port); err != nil {
 			log.Fatalf("Server error: %v", err)
 		}
 	}()
